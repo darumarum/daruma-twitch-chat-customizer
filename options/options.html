@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>スタンプ管理 - Twitch Chat Customizer</title>
+  <link rel="stylesheet" href="options.css" />
+  <link rel="stylesheet" href="../shared/settings-ui.css" />
+</head>
+<body data-card-size="large">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="../icons/icon48.png" alt="" class="brand-icon" />
+        <div>
+          <h1 class="brand-title">スタンプ管理</h1>
+          <p class="brand-sub">Twitch Chat Customizer<span id="ext-version"></span></p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="stats-pills">
+          <span class="pill">お気に入り <strong id="stat-favorites">0</strong></span>
+          <span class="pill">チャンネル <strong id="stat-groups">0</strong></span>
+          <span class="pill">スタンプ <strong id="stat-emotes">0</strong></span>
+        </div>
+
+        <div class="size-switcher" role="group" aria-label="表示サイズ">
+          <button type="button" class="size-btn" data-size="normal">標準</button>
+          <button type="button" class="size-btn active" data-size="large">大</button>
+          <button type="button" class="size-btn" data-size="xlarge">特大</button>
+        </div>
+
+        <button type="button" id="btn-undo" class="btn btn-secondary" disabled title="直前の操作を元に戻す (Ctrl+Z)">
+          ↩ 元に戻す
+        </button>
+      </div>
+    </div>
+
+    <nav class="tabs-bar" aria-label="スタンプ管理の表示">
+      <div class="tabs-inner" role="tablist">
+        <button type="button" class="tab-btn active" role="tab" id="tab-favorites" aria-controls="panel-favorites" aria-selected="true" data-tab="favorites">
+          お気に入り
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-channels" aria-controls="panel-channels" aria-selected="false" tabindex="-1" data-tab="channels">
+          チャンネル
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-browse" aria-controls="panel-browse" aria-selected="false" tabindex="-1" data-tab="browse">
+          スタンプ一覧
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Tab 1: Favorites Reorder -->
+    <section id="panel-favorites" class="tab-panel active" role="tabpanel" aria-labelledby="tab-favorites">
+      <div class="toolbar">
+        <div class="search-box">
+          <input type="text" id="fav-search" placeholder="スタンプ・チャンネルを検索" aria-label="お気に入りを検索" />
+          <button type="button" id="fav-search-clear" class="clear-btn" title="クリア">×</button>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" id="btn-sort-fav-name" class="btn btn-secondary">名前順</button>
+          <button type="button" id="btn-sort-fav-owner" class="btn btn-secondary">チャンネル順</button>
+          <button type="button" id="btn-goto-browse" class="btn btn-primary">スタンプを追加</button>
+        </div>
+      </div>
+
+      <p class="hint-bar" id="fav-hint-bar" hidden></p>
+
+      <div id="fav-grid" class="fav-grid"></div>
+    </section>
+
+    <!-- Tab 2: Channels Reorder -->
+    <section id="panel-channels" class="tab-panel" role="tabpanel" aria-labelledby="tab-channels">
+      <div class="toolbar">
+        <label class="checkbox-label">
+          <span>ピッカーで視聴中のチャンネルを先頭に固定</span>
+          <input type="checkbox" role="switch" id="opt-pin-current-channel" />
+        </label>
+        <div class="toolbar-actions">
+          <button type="button" id="btn-reset-channel-order" class="btn btn-secondary">名前順に戻す</button>
+        </div>
+      </div>
+
+
+      <div id="channel-list" class="channel-list"></div>
+    </section>
+
+    <!-- Tab 3: Browse All & Toggle Favorites -->
+    <section id="panel-browse" class="tab-panel" role="tabpanel" aria-labelledby="tab-browse">
+      <div class="toolbar">
+        <div class="search-box">
+          <input type="text" id="browse-search" placeholder="スタンプ・チャンネルを検索" aria-label="スタンプを検索" />
+          <button type="button" id="browse-search-clear" class="clear-btn" title="クリア">×</button>
+        </div>
+        <select id="browse-channel-filter" class="select-box" aria-label="チャンネルの絞り込み">
+          <option value="">すべてのチャンネル</option>
+        </select>
+        <label class="checkbox-label">
+          <span>お気に入りのみ</span>
+          <input type="checkbox" role="switch" id="browse-only-fav" />
+        </label>
+      </div>
+
+
+      <div id="browse-sections" class="browse-sections"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../shared/constants.js"></script>
+  <script src="../shared/emote-parser.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+/* Twitch Chat Customizer - Custom Chat Column Width & Resize Handle */
+
+/* 1. Normal Watch Mode:
+   .right-column natively stays width: 0 at the right edge;
+   .channel-root__right-column--expanded slides left by --tcc-chat-width and takes --tcc-chat-width. */
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__right-column.channel-root__right-column--expanded {
+  width: var(--tcc-chat-width, 340px) !important;
+  min-width: var(--tcc-chat-width, 340px) !important;
+  transform: translateX(calc(-1 * var(--tcc-chat-width, 340px))) translateZ(0px) !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__right-column .chat-shell,
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__right-column .stream-chat {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .toggle-visibility__right-column--expanded {
+  transform: translateX(calc(-1 * var(--tcc-chat-width, 340px))) !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__player--with-chat {
+  width: calc(100% - var(--tcc-chat-width, 340px)) !important;
+  max-width: calc(100% - var(--tcc-chat-width, 340px)) !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__info--with-chat {
+  /* Twitch reserves chat space on .channel-info-content itself. */
+  padding-right: 0 !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch:not(.tcc-chat-collapsed) .channel-root__info--with-chat .channel-info-content {
+  width: calc(100% - var(--tcc-chat-width, 340px)) !important;
+}
+
+html.tcc-width-enabled.tcc-normal-watch.tcc-fit-normal-player:not(.tcc-chat-collapsed) .persistent-player {
+  width: var(--tcc-player-width) !important;
+  max-width: var(--tcc-player-width) !important;
+}
+
+/* 2. Theatre Mode:
+   .right-column--theatre is fixed on the right; inner .channel-root__right-column must fill 100%. */
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .right-column.right-column--theatre:not(.right-column--collapsed) {
+  width: var(--tcc-chat-width, 340px) !important;
+  min-width: var(--tcc-chat-width, 340px) !important;
+}
+
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .right-column.right-column--theatre:not(.right-column--collapsed) .channel-root__right-column,
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .right-column.right-column--theatre:not(.right-column--collapsed) .chat-shell,
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .right-column.right-column--theatre:not(.right-column--collapsed) .stream-chat {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+}
+
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .persistent-player,
+html.tcc-width-enabled.tcc-theatre-mode:not(.tcc-chat-collapsed) .persistent-player--theatre {
+  width: calc(100% - var(--tcc-chat-width, 340px)) !important;
+  max-width: calc(100% - var(--tcc-chat-width, 340px)) !important;
+}
+
+/* 3. VOD Watch Page (no .channel-root__right-column; .right-column is a direct flex sibling) */
+html.tcc-width-enabled.tcc-vod-watch:not(.tcc-chat-collapsed) .right-column:not(.right-column--collapsed):not(.right-column--below) {
+  width: var(--tcc-chat-width, 340px) !important;
+  min-width: var(--tcc-chat-width, 340px) !important;
+}
+
+html.tcc-width-enabled.tcc-vod-watch:not(.tcc-chat-collapsed) .right-column:not(.right-column--collapsed):not(.right-column--below) .chat-shell,
+html.tcc-width-enabled.tcc-vod-watch:not(.tcc-chat-collapsed) .right-column:not(.right-column--collapsed):not(.right-column--below) .stream-chat {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Resize Handle */
+#tcc-chat-resize-handle {
+  position: fixed;
+  z-index: 9998;
+  width: 6px;
+  cursor: ew-resize;
+  background: transparent;
+}
+
+#tcc-chat-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+#tcc-chat-resize-handle:hover::after,
+#tcc-chat-resize-handle.tcc-dragging::after {
+  background: #9147ff;
+}
+
+#tcc-chat-resize-handle .tcc-resize-tooltip {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: #18181b;
+  color: #efeff1;
+  border: 1px solid #9147ff;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+#tcc-chat-resize-handle:hover .tcc-resize-tooltip,
+#tcc-chat-resize-handle.tcc-dragging .tcc-resize-tooltip {
+  display: block;
+}
+
+html.tcc-resizing,
+html.tcc-resizing * {
+  cursor: ew-resize !important;
+  user-select: none !important;
+  transition: none !important;
+}
+
+html.tcc-picker-resizing-ew,
+html.tcc-picker-resizing-ew * {
+  cursor: ew-resize !important;
+  user-select: none !important;
+}
+
+html.tcc-picker-resizing-ns,
+html.tcc-picker-resizing-ns * {
+  cursor: ns-resize !important;
+  user-select: none !important;
+}
+
+html.tcc-picker-resizing-nwse,
+html.tcc-picker-resizing-nwse * {
+  cursor: nwse-resize !important;
+  user-select: none !important;
+}
+
+html.tcc-picker-resizing-nesw,
+html.tcc-picker-resizing-nesw * {
+  cursor: nesw-resize !important;
+  user-select: none !important;
+}

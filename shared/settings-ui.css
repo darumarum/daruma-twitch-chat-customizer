@@ -1,0 +1,15 @@
+:root { color-scheme:dark; --bg:#0e0e10; --surface:#18181b; --surface-2:#222226; --surface-hover:#2c2c33; --border:#303037; --text:#efeff1; --muted:#a4a4af; --accent:#9147ff; --accent-hover:#a56bff; }
+body, button, input, select { font-family:"Segoe UI","Noto Sans JP",sans-serif; }
+:where(button,input,select,a):focus-visible { outline:2px solid #bf94ff; outline-offset:3px; }
+.toggle-row input[type="checkbox"], .checkbox-label input[type="checkbox"], .switch input[type="checkbox"] {
+  appearance:none; position:relative; display:inline-block; flex:0 0 34px;
+  width:34px; height:20px; margin:0; border:1px solid #60606c; border-radius:999px;
+  background:#3a3a44; cursor:pointer; vertical-align:middle; transition:background .12s,border-color .12s;
+}
+.toggle-row input[type="checkbox"]::before, .checkbox-label input[type="checkbox"]::before, .switch input[type="checkbox"]::before {
+  content:""; position:absolute; left:2px; top:2px; width:14px; height:14px; border-radius:50%; background:#efeff1; transition:transform .12s;
+}
+.toggle-row input[type="checkbox"]:checked, .checkbox-label input[type="checkbox"]:checked, .switch input[type="checkbox"]:checked { background:var(--accent); border-color:var(--accent); }
+.toggle-row input[type="checkbox"]:checked::before, .checkbox-label input[type="checkbox"]:checked::before, .switch input[type="checkbox"]:checked::before { transform:translateX(14px); }
+input[type="checkbox"]:disabled { cursor:default; }
+@media(prefers-reduced-motion:reduce) { *, *::before, *::after { transition:none !important; animation:none !important; } }

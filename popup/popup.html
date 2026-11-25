@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>設定 - Twitch Chat Customizer</title>
+  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="../shared/settings-ui.css" />
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand"><img src="../icons/icon48.png" alt="" class="brand-icon" /><div><h1>設定</h1><p>Twitch Chat Customizer<span id="ext-version"></span></p></div></div>
+    <label class="switch master-switch"><span>有効</span><input type="checkbox" role="switch" id="opt-enabled" aria-label="拡張機能を有効にする" /></label>
+  </header>
+  <nav class="settings-tabs" role="tablist" aria-label="設定カテゴリ">
+    <button type="button" role="tab" id="tab-chat" aria-controls="settings-chat" aria-selected="true" data-settings-tab="chat"><span class="tab-dot" id="dot-chat" aria-hidden="true"></span>コメント欄</button>
+    <button type="button" role="tab" id="tab-picker" aria-controls="settings-picker" aria-selected="false" tabindex="-1" data-settings-tab="picker"><span class="tab-dot" id="dot-picker" aria-hidden="true"></span>スタンプ</button>
+    <button type="button" role="tab" id="tab-rewards" aria-controls="settings-rewards" aria-selected="false" tabindex="-1" data-settings-tab="rewards"><span class="tab-dot" id="dot-rewards" aria-hidden="true"></span>チャネポ</button>
+    <button type="button" role="tab" id="tab-data" aria-controls="settings-data" aria-selected="false" tabindex="-1" data-settings-tab="data">データ</button>
+  </nav>
+  <main class="content">
+    <section id="settings-chat" class="settings-panel" role="tabpanel" aria-labelledby="tab-chat">
+      <div class="section-head"><h2>コメント欄の横幅</h2><label class="switch"><input type="checkbox" role="switch" id="opt-chatEnabled" aria-label="コメント欄の横幅変更を有効にする" /></label></div>
+      <fieldset id="chat-controls">
+        <div class="range-row"><div class="row"><label for="opt-chatWidthPx">横幅</label><div class="width-right"><div class="unit-toggle" id="opt-chatWidthUnit" role="group" aria-label="コメント欄の横幅の単位"><button type="button" data-unit="px" aria-pressed="true">px</button><button type="button" data-unit="%" aria-pressed="false">%</button></div><span id="val-chatWidthPx" class="val-badge">340px</span><button type="button" id="btn-reset-width" class="btn-mini" aria-label="コメント欄の幅を初期値に戻す">リセット</button></div></div><input type="range" id="opt-chatWidthPx" min="240" max="800" step="1" class="range" /></div>
+        <label class="row toggle-row" title="チャット欄の左端をドラッグして横幅を調整します"><span>ドラッグで幅を調整</span><input type="checkbox" role="switch" id="opt-showResizeHandle" /></label>
+      </fieldset>
+    </section>
+    <section id="settings-picker" class="settings-panel" role="tabpanel" aria-labelledby="tab-picker" hidden>
+      <div class="section-head"><h2>スタンプピッカー</h2><label class="switch"><input type="checkbox" role="switch" id="opt-pickerEnabled" aria-label="スタンプピッカーを有効にする" /></label></div>
+      <fieldset id="picker-controls">
+        <div class="row management-row" title="別タブでお気に入りの登録・並び順や配信者の順序を編集します"><span>お気に入りと並び順</span><button type="button" id="btn-open-options" class="btn" aria-label="スタンプ管理を開く">管理 <span aria-hidden="true">↗</span></button></div>
+        <h3>動作</h3>
+        <label class="row toggle-row"><span>スタンプ選択後も開いておく</span><input type="checkbox" role="switch" id="opt-keepOpenOnSelect" /></label>
+        <label class="row toggle-row"><span>視聴中のチャンネルを先頭に固定</span><input type="checkbox" role="switch" id="opt-pinCurrentChannel" /></label>
+        <h3>表示</h3>
+        <div class="row"><label for="opt-emoteSize">スタンプのサイズ</label><select id="opt-emoteSize" class="select"><option value="small">小 · 28px</option><option value="medium">中 · 34px</option><option value="large">大 · 44px</option></select></div>
+        <div class="range-row"><div class="row"><label for="opt-pickerWidthPx">横幅</label><div class="width-right"><div class="unit-toggle" id="opt-pickerWidthUnit" role="group" aria-label="スタンプピッカーの横幅の単位"><button type="button" data-unit="px" aria-pressed="true">px</button><button type="button" data-unit="%" aria-pressed="false">%</button></div><span id="val-pickerWidthPx" class="val-badge">680px</span></div></div><input type="range" id="opt-pickerWidthPx" min="320" max="1200" step="1" class="range" /></div>
+        <div class="range-row"><div class="row"><label for="opt-pickerHeightPx">高さ</label><span id="val-pickerHeightPx" class="val-badge">600px</span></div><input type="range" id="opt-pickerHeightPx" min="360" max="850" step="10" class="range" /></div>
+      </fieldset>
+    </section>
+    <section id="settings-rewards" class="settings-panel" role="tabpanel" aria-labelledby="tab-rewards" hidden>
+      <div class="section-head"><h2>チャネポピッカー</h2><label class="switch"><input type="checkbox" role="switch" id="opt-rewardsEnabled" aria-label="チャネポピッカーを有効にする" /></label></div>
+      <fieldset id="rewards-controls">
+        <h3>動作</h3>
+        <label class="row toggle-row" title="右側のポイントボタンを押すと確認画面を開かずにすぐ交換します（入力が必要な報酬は通常画面が開きます）"><span>ワンクリックで交換</span><input type="checkbox" role="switch" id="opt-rewardsOneClickRedeem" /></label>
+        <label class="row toggle-row" id="row-rewardsPrecheckAvailability" title="ピッカーを開いたとき交換できない報酬を自動でグレー表示にします"><span>開いたときに交換可否を確認</span><input type="checkbox" role="switch" id="opt-rewardsPrecheckAvailability" /></label>
+        <label class="row toggle-row"><span>交換成功後に自動で閉じる</span><input type="checkbox" role="switch" id="opt-rewardsAutoCloseOnRedeem" /></label>
+        <h3>表示</h3>
+        <div class="row"><label for="opt-rewardsItemSize">文字サイズ</label><select id="opt-rewardsItemSize" class="select"><option value="small">小 · 11px</option><option value="medium">中 · 12px</option><option value="large">大 · 14px</option></select></div>
+        <div class="range-row"><div class="row"><label for="opt-rewardsWidthPx">横幅</label><div class="width-right"><div class="unit-toggle" id="opt-rewardsWidthUnit" role="group" aria-label="チャネポピッカーの横幅の単位"><button type="button" data-unit="px" aria-pressed="true">px</button><button type="button" data-unit="%" aria-pressed="false">%</button></div><span id="val-rewardsWidthPx" class="val-badge">340px</span></div></div><input type="range" id="opt-rewardsWidthPx" min="280" max="900" step="1" class="range" /></div>
+        <div class="range-row"><div class="row"><label for="opt-rewardsHeightPx">高さ</label><span id="val-rewardsHeightPx" class="val-badge">540px</span></div><input type="range" id="opt-rewardsHeightPx" min="300" max="850" step="10" class="range" /></div>
+      </fieldset>
+    </section>
+    <section id="settings-data" class="settings-panel" role="tabpanel" aria-labelledby="tab-data" hidden>
+      <div class="section-head"><h2>データ</h2></div>
+      <h3>スタンプ</h3>
+      <div class="stats-bar"><span>チャンネル <strong id="stat-groups">0</strong></span><span>スタンプ <strong id="stat-emotes">0</strong></span><span>お気に入り <strong id="stat-favorites">0</strong></span></div>
+      <div class="row"><span>スタンプ一覧</span><button type="button" id="btn-sync-tab" class="btn">更新</button></div>
+      <h3>バックアップ</h3>
+      <div class="row"><span>設定・お気に入り</span><div class="button-pair"><button type="button" id="btn-export" class="btn">書き出す</button><label class="btn file-btn" role="button" tabindex="0">読み込む<input type="file" id="input-import" accept=".json,application/json" hidden aria-label="バックアップを読み込む" /></label></div></div>
+      <h3>メンテナンス</h3>
+      <div class="row"><span>スタンプキャッシュ</span><button type="button" id="btn-clear-catalog" class="btn btn-danger">消去</button></div>
+      <div class="row"><span>設定を初期化</span><button type="button" id="btn-reset-settings" class="btn btn-danger">リセット</button></div>
+    </section>
+  </main>
+  <p id="status-msg" class="status-msg" role="status" aria-live="polite"></p>
+</div>
+<script src="../shared/constants.js"></script><script src="../shared/emote-parser.js"></script><script src="../shared/storage.js"></script><script src="popup.js"></script>
+</body>
+</html>

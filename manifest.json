@@ -1,0 +1,71 @@
+{
+  "manifest_version": 3,
+  "name": "Twitch Chat Customizer",
+  "version": "1.0.12",
+  "description": "Twitchのコメント欄の横幅調整、共有スタンプピッカー、コンパクトなチャネポピッカーを追加します。",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.twitch.tv/*",
+    "https://dashboard.twitch.tv/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Twitch Chat Customizer",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.twitch.tv/*",
+        "https://dashboard.twitch.tv/*"
+      ],
+      "js": [
+        "content/page-bridge.js",
+        "content/rewards-state.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://www.twitch.tv/*",
+        "https://dashboard.twitch.tv/*"
+      ],
+      "css": [
+        "content/styles.css",
+        "content/rewards.css"
+      ],
+      "js": [
+        "shared/constants.js",
+        "shared/emote-parser.js",
+        "shared/storage.js",
+        "content/chat-width.js",
+        "content/emote-picker.js",
+        "content/main.js",
+        "content/rewards.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}
