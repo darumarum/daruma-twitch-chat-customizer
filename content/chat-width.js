@@ -81,9 +81,8 @@
         return rect.width <= 1 || rect.height <= 1;
       }
       if (channelCol) {
-        if (channelCol.closest && channelCol.closest('[aria-hidden="true"]')) {
-          return true;
-        }
+        // Dialogs (including notifications) aria-hide the background without
+        // collapsing it. Use chat layout state and geometry, not accessibility.
         if (
           channelCol.classList.contains('channel-root__right-column--collapsed') ||
           !channelCol.classList.contains('channel-root__right-column--expanded')
