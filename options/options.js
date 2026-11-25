@@ -655,7 +655,8 @@
   async function toggleEmoteFavoriteFromBrowse(emote, ownerName) {
     pushUndo('favorites', state.favorites);
     const prevLen = state.favorites.length;
-    const nextFavs = storage.toggleFavorite(state.favorites, emote, ownerName);
+    if (storage.channelOnlyId(emote, state.catalog) || !storage.canUseEmote(emote, {}, state.catalog)) return;
+    const nextFavs = storage.toggleFavorite(state.favorites, emote, ownerName, state.catalog);
     state.favorites = nextFavs;
     renderAll();
     await storage.saveFavorites(nextFavs);

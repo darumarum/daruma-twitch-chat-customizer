@@ -334,3 +334,46 @@ test('catalog updates remove already-saved follower favorites and saveFavorites 
     assert.deepEqual((await storage.loadAll()).favorites, [{ id: 'sub' }]);
   } finally { global.chrome = previousChrome; }
 });
+
+
+test('expired favorites compact without deletion and return to their original positions after resubscription', async () => {
+  const parser = require('../shared/emote-parser.js');
+  const a = { id: 'a', token: 'A' }, expired = { id: 'expired', token: 'OldSub' }, b = { id: 'b', token: 'B' };
+  const favorites = [a, expired, b];
+  const snapshot = emotes => ({ completeViewerSnapshot: true, groups: [
+    { groupId: 'channel:1', type: 'channel', ownerId: '1', emotes }
+  ] });
+  const initial = parser.mergeEmoteCatalog(null, snapshot(favorites)).catalog;
+  const expiredCatalog = parser.mergeEmoteCatalog(initial, snapshot([a, b])).catalog;
+  assert.deepEqual(storage.visibleFavorites(favorites, expiredCatalog).map(e => e.id), ['a', 'b']);
+  assert.deepEqual(expiredCatalog.groups['channel:1'].emotes.map(e => e.id), ['a', 'b']);
+  assert.equal(storage.canUseEmote(expired, {}, expiredCatalog), false);
+  assert.deepEqual(storage.toggleFavorite([], expired, 'Owner', expiredCatalog), []);
+  assert.deepEqual(favorites.map(e => e.id), ['a', 'expired', 'b']);
+
+  // Moving visible cards must leave dormant entries in their saved slots.
+  const reordered = storage.reorderVisibleFavorites(favorites, storage.visibleFavorites(favorites, expiredCatalog), 1, 0);
+  assert.deepEqual(reordered.map(e => e.id), ['b', 'expired', 'a']);
+  const keys = constants.STORAGE_KEYS;
+  const values = { [keys.CATALOG]: expiredCatalog, [keys.FAVORITES]: favorites };
+  const previousChrome = global.chrome;
+  global.chrome = { storage: { local: {
+    get(names, cb) { cb(Object.fromEntries(names.map(k => [k, values[k]]))); },
+    set(updates, cb) { Object.assign(values, updates); cb(); }
+  } } };
+  try {
+    await storage.saveFavorites(reordered);
+    assert.deepEqual((await storage.loadAll()).favorites.map(e => e.id), ['b', 'expired', 'a']);
+    const renewed = await storage.mergeAndSaveCatalog(snapshot([a, { ...expired, token: 'NewSub' }, b]));
+    assert.deepEqual(storage.visibleFavorites(values[keys.FAVORITES], renewed).map(e => e.id), ['b', 'expired', 'a']);
+    assert.equal(parser.resolveEmote(renewed, expired).token, 'NewSub');
+  } finally { global.chrome = previousChrome; }
+});
+
+test('an empty verified usable list hides all favorites without losing saved order', () => {
+  const favorites = [{ id: 'a' }, { id: 'b' }];
+  assert.deepEqual(storage.visibleFavorites(favorites, { allowedEmoteIds: [] }), []);
+  assert.deepEqual(storage.filterFavorites(favorites, { allowedEmoteIds: [] }), favorites);
+  // Before any verified snapshot exists, cached favorites remain available.
+  assert.deepEqual(storage.visibleFavorites(favorites, { groups: {} }), favorites);
+});

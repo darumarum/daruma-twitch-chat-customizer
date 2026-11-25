@@ -1227,9 +1227,9 @@
     }
 
     // --- Pointer Events Drag & Drop: Favorites 2D Grid Reordering ---
-    function attachFavoriteDragHandler(btnEl, fav, index, favGridEl) {
+    function attachFavoriteDragHandler(btnEl, fav, index, favGridEl, visible = state.favorites) {
       btnEl.addEventListener('pointerdown', (e) => {
-        if (e.button !== 0 || searchQuery.trim() !== '' || state.favorites.length < 2) return;
+        if (e.button !== 0 || searchQuery.trim() !== '' || visible.length < 2) return;
 
         const startX = e.clientX;
         const startY = e.clientY;
@@ -1345,10 +1345,10 @@
           let toIdx = hoveredTargetIdx;
           if (placeAfter && toIdx < index) toIdx += 1;
           if (!placeAfter && toIdx > index) toIdx -= 1;
-          toIdx = Math.max(0, Math.min(state.favorites.length - 1, toIdx));
+          toIdx = Math.max(0, Math.min(visible.length - 1, toIdx));
 
           if (toIdx !== index) {
-            const nextFavs = storage.reorderList(state.favorites, index, toIdx);
+            const nextFavs = storage.reorderVisibleFavorites(state.favorites, visible, index, toIdx);
             state.favorites = nextFavs;
             renderBody();
             await onFavoritesChange(nextFavs);
@@ -1444,13 +1444,14 @@
       }
 
       // 1. Favorites Section
+      const usableFavorites = storage.visibleFavorites(state.favorites, state.catalog, currentChannel);
       const filteredFavorites = query
-        ? state.favorites.filter(
+        ? usableFavorites.filter(
             (f) =>
               f.token.toLowerCase().includes(query) ||
               String(f.ownerName || '').toLowerCase().includes(query)
           )
-        : state.favorites;
+        : usableFavorites;
 
       if (!query || filteredFavorites.length > 0) {
         const favSec = document.createElement('div');
@@ -1475,7 +1476,7 @@
               'data-fav-index': String(i)
             });
             if (!query) {
-              attachFavoriteDragHandler(btn, fav, i, grid);
+              attachFavoriteDragHandler(btn, fav, i, grid, usableFavorites);
             }
             grid.appendChild(btn);
           }
@@ -1891,9 +1892,10 @@
       positionPanel(anchorEl);
       observeInputBox(anchorEl);
 
-      // Trigger background refresh if catalog is empty
+      // Refresh viewer permissions after a minute, including subscription expiry/renewal.
       const hasGroups = state.catalog && state.catalog.groups && Object.keys(state.catalog.groups).length > 0;
-      if (!hasGroups && !isSyncing) {
+      const stalePermissions = !state.catalog.permissionsUpdatedAt || Date.now() - state.catalog.permissionsUpdatedAt > 60000;
+      if ((!hasGroups || stalePermissions) && !isSyncing) {
         triggerManualSync();
       }
     }

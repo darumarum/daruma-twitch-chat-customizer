@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Twitch Chat Customizer",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Twitchのコメント欄の横幅調整、共有スタンプピッカー、コンパクトなチャネポピッカーを追加します。",
   "permissions": [
     "storage"

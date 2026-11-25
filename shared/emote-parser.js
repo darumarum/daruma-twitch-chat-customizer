@@ -547,6 +547,7 @@
       catalog: {
         groups: nextGroups,
         channelOnlyEmotes,
+        permissionsUpdatedAt: extracted?.completeViewerSnapshot ? Date.now() : existingCatalog?.permissionsUpdatedAt || 0,
         ...(allowedIds ? { allowedEmoteIds: Array.from(allowedIds) } : {}),
         updatedAt: Date.now()
       },

@@ -27,7 +27,19 @@
 
   function canUseEmote(emote, currentChannel, catalog) {
     const restrictedTo = channelOnlyId(emote, catalog);
+    if (Array.isArray(catalog?.allowedEmoteIds) && !catalog.allowedEmoteIds.includes(emote?.id)) return false;
     return !restrictedTo || restrictedTo === String(currentChannel?.id || '');
+  }
+
+  function visibleFavorites(favorites, catalog, currentChannel = {}) {
+    return filterFavorites(favorites, catalog).filter(emote => canUseEmote(emote, currentChannel, catalog));
+  }
+
+  function reorderVisibleFavorites(favorites, visible, fromIndex, toIndex) {
+    const ids = new Set(visible.map(emote => emote.id));
+    const reordered = reorderList(favorites.filter(emote => ids.has(emote.id)), fromIndex, toIndex);
+    let index = 0;
+    return favorites.map(emote => ids.has(emote.id) ? reordered[index++] : emote);
   }
 
   function toggleFavorite(favorites, emote, ownerName, catalog) {
@@ -40,7 +52,7 @@
       return list;
     }
 
-    if (channelOnlyId(emote, catalog)) return list;
+    if (channelOnlyId(emote, catalog) || !canUseEmote(emote, {}, catalog)) return list;
 
     list.push({
       id: String(emote.id),
@@ -434,6 +446,8 @@
   return {
     channelOnlyId,
     filterFavorites,
+    visibleFavorites,
+    reorderVisibleFavorites,
     canUseEmote,
     toggleFavorite,
     reorderList,
