@@ -1,3 +1,5 @@
+AI向け
+
 # Daruma Twitch Chat Customizer
 
 Twitch (`www.twitch.tv`) とクリエイターダッシュボード (`dashboard.twitch.tv`) の両方に対応した、チャット欄・スタンプ・チャネポを快適にする Chrome 拡張機能です（Chromium 系ブラウザの Edge / Brave などでも動作します）。
