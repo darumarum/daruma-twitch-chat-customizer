@@ -115,6 +115,7 @@
     const groupMap = new Map();
     const seen = new WeakSet();
     let completeViewerSnapshot = false;
+    let permissionChannelId = String(options.permissionChannelId || '');
     const channelOnlyEmotes = {};
     const responseErrors = (Array.isArray(payload) ? payload : [payload]).some(response => response?.errors?.length);
 
@@ -212,6 +213,7 @@
       if (options.completeViewerSnapshot === true && !responseErrors &&
           ctx.parentKey === 'self' && ctx.channelOwner && Array.isArray(node.availableEmoteSets)) {
         completeViewerSnapshot = true;
+        permissionChannelId = String(ctx.channelOwner.id || permissionChannelId);
       }
       // Public channel catalogs do not prove that the viewer may use these emotes.
       // Only viewer-specific lists and unlocked native picker entries are usable.
@@ -365,7 +367,7 @@
       }
     }
 
-    return { groups, ownerProfiles, completeViewerSnapshot, channelOnlyEmotes };
+    return { groups, ownerProfiles, completeViewerSnapshot, channelOnlyEmotes, permissionChannelId };
   }
 
   function cloneGroup(g) {
@@ -415,6 +417,14 @@
     const allowedIds = extracted?.completeViewerSnapshot
       ? new Set(extractedGroups.flatMap(group => (group.emotes || []).map(emote => emote.id)))
       : Array.isArray(existingCatalog?.allowedEmoteIds) ? new Set(existingCatalog.allowedEmoteIds) : null;
+    const permissionChannelId = extracted?.completeViewerSnapshot
+      ? String(extracted.permissionChannelId || '') : String(existingCatalog?.permissionChannelId || '');
+    // A follower-origin emote in another channel's usable list has global access
+    // (for example through a subscription). Public local-set metadata alone is
+    // insufficient. Recompute after metadata updates and permission revocation.
+    const globallyUsableEmoteIds = allowedIds && permissionChannelId
+      ? Array.from(allowedIds).filter(id => channelOnlyEmotes[id] && channelOnlyEmotes[id] !== permissionChannelId)
+      : [];
     const incomingGroups = allowedIds ? extractedGroups.map(group => ({ ...group,
       emotes: (group.emotes || []).filter(emote => allowedIds.has(emote.id)) })) : extractedGroups;
     if (extracted?.completeViewerSnapshot) {
@@ -547,6 +557,8 @@
       catalog: {
         groups: nextGroups,
         channelOnlyEmotes,
+        permissionChannelId,
+        globallyUsableEmoteIds,
         permissionsUpdatedAt: extracted?.completeViewerSnapshot ? Date.now() : existingCatalog?.permissionsUpdatedAt || 0,
         ...(allowedIds ? { allowedEmoteIds: Array.from(allowedIds) } : {}),
         updatedAt: Date.now()

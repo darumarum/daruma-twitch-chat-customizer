@@ -369,7 +369,7 @@
     }
 
     // Replace stale permissions only from a complete usable-for-channel list.
-    if (fetchedCatalogs.length) postToContent('GQL_RESPONSE', { payload: fetchedCatalogs, completeViewerSnapshot: completeChannelSnapshot || !channelID });
+    if (fetchedCatalogs.length) postToContent('GQL_RESPONSE', { payload: fetchedCatalogs, completeViewerSnapshot: completeChannelSnapshot || !channelID, permissionChannelId: channelID });
     postToContent('ACTIVE_FETCH_RESULT', {
       requestId,
       ok: fetchedAny,

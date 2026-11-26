@@ -18,11 +18,13 @@
   const { STORAGE_KEYS, DEFAULT_SETTINGS, deepMergeSettings } = constants;
 
   function channelOnlyId(emote, catalog) {
+    if (catalog?.globallyUsableEmoteIds?.includes(emote?.id) &&
+        catalog?.allowedEmoteIds?.includes(emote?.id)) return '';
     return String(emote?.channelOnlyId || catalog?.channelOnlyEmotes?.[emote?.id] || '');
   }
 
   function filterFavorites(favorites, catalog) {
-    return (Array.isArray(favorites) ? favorites : []).filter(emote => !channelOnlyId(emote, catalog));
+    return (Array.isArray(favorites) ? favorites : []).filter(emote => emote?.globallyUsable === true || !channelOnlyId(emote, catalog));
   }
 
   function canUseEmote(emote, currentChannel, catalog) {
@@ -59,7 +61,8 @@
       token: String(emote.token || ''),
       groupId: String(emote.groupId || 'global'),
       ownerName: String(ownerName || emote.ownerName || 'グローバル'),
-      assetType: emote.assetType === 'ANIMATED' ? 'ANIMATED' : 'STATIC'
+      assetType: emote.assetType === 'ANIMATED' ? 'ANIMATED' : 'STATIC',
+      ...(catalog?.globallyUsableEmoteIds?.includes(emote.id) ? { globallyUsable: true } : {})
     });
     return list;
   }

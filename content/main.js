@@ -216,7 +216,7 @@
       if (!data || data.channel !== BRIDGE_CHANNEL) return;
 
       if (data.type === 'GQL_RESPONSE' && data.payload) {
-        const extracted = emoteParser.extractEmotesFromGqlPayload(data.payload, { completeViewerSnapshot: data.completeViewerSnapshot === true });
+        const extracted = emoteParser.extractEmotesFromGqlPayload(data.payload, { completeViewerSnapshot: data.completeViewerSnapshot === true, permissionChannelId: data.permissionChannelId });
         processExtractedCatalogData(extracted);
         return;
       }
